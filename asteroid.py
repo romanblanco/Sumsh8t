@@ -5,51 +5,110 @@ import pyglet
 from pyglet import gl
 from pyglet.window import key
 
-window = pyglet.window.Window(width=800, height=400)
+WIDTH = 800
+HEIGHT = 400
 
-obrl = pyglet.image.load('playerShip1_red.png')
-spaceship = pyglet.sprite.Sprite(obrl)
-spaceship.anchor_x = spaceship.width // 2
-spaceship.anchor_y = spaceship.height // 2
-#nefunguje pak spravím
+mimox = -90
+mimoy = -90
+rx = 0
+xy = 0
 
-#obr2 = pyglet.image.load('laserBlue15.png')
-#laser_good = pyglet.sprite.Sprite(obr2)
+window = pyglet.window.Window(WIDTH, HEIGHT)
 
-#obr3 = pyglet.image.load('meteorGrey_big4.png')
-#meteor.anchor_x = meteor.width // 2
-#meteor.anchor_y = meteor.height // 2
+ACCELERATION = 140
+LASER_ACCELERATION = 800
+rotation_speed = 60
 
-#meteory pak
+batch = pyglet.graphics.Batch()
 
-ACCELERATION = 100
-rotation_speed = 40
-
-
-#spaceship_x_speed = 5
-#spaceship_y_speed = 5
-
-#nic už to jaksi funguje
+Met = pyglet.image.load('meteorGrey_big4.png')
 
 stisknute_klavesy = set()
 
+class Spaceship:
+
+    def __init__(self):
+
+        Ship = pyglet.image.load('playerShip1_red.png')
+        Ship.anchor_x = Ship.width // 2
+        Ship.anchor_y = Ship.height // 2
+        self.sprite = pyglet.sprite.Sprite(Ship, batch=batch)
+
+    def pohyb_lodi(self,t):
+
+        la = 1
+
+        if 'w' in stisknute_klavesy:
+
+            self.sprite.x = self.sprite.x + t * ACCELERATION * math.cos(math.radians(90-self.sprite.rotation))
+            self.sprite.y = self.sprite.y + t * ACCELERATION * math.sin(math.radians(90-self.sprite.rotation))
+
+        if 's' in stisknute_klavesy:
+
+            self.sprite.x = self.sprite.x - t * ACCELERATION * math.cos(math.radians(90-self.sprite.rotation))
+            self.sprite.y = self.sprite.y - t * ACCELERATION * math.sin(math.radians(90-self.sprite.rotation))
+
+        if 'd' in stisknute_klavesy:
+
+            self.sprite.rotation = self.sprite.rotation + t * rotation_speed
+
+        if 'a' in stisknute_klavesy:
+
+            self.sprite.rotation = self.sprite.rotation - t * rotation_speed
+
+        if 'r' in stisknute_klavesy:
 
 
-def pohyb_lod(dt):
-    if 'w' in stisknute_klavesy:
-        #spaceship_x_speed += dt * ACCELERATION * math.cos(spaceship.rotation)
-        #spaceship_y_speed += dt * ACCELERATION * math.sin(spaceship.rotation)
-        spaceship.x = spaceship.x + dt * ACCELERATION * math.cos(math.radians(90-spaceship.rotation))
-        spaceship.y = spaceship.y + dt * ACCELERATION * math.sin(math.radians(90-spaceship.rotation))
-    if 's' in stisknute_klavesy:
-        #spaceship_x_speed -= dt * ACCELERATION * math.cos(spaceship.rotation)
-        #spaceship_y_speed -= dt * ACCELERATION * math.sin(spaceship.rotation)
-        spaceship.x = spaceship.x - dt * ACCELERATION * math.cos(math.radians(90-spaceship.rotation))
-        spaceship.y = spaceship.y - dt * ACCELERATION * math.sin(math.radians(90-spaceship.rotation))
-    if 'd' in stisknute_klavesy:
-        spaceship.rotation = spaceship.rotation + dt * rotation_speed
-    if 'a' in stisknute_klavesy:
-        spaceship.rotation = spaceship.rotation - dt * rotation_speed
+                Player_laser.sprite.x = self.sprite.x
+                Player_laser.sprite.y = self.sprite.y
+                Player_laser.sprite.rotation = self.sprite.rotation
+                stisknute_klavesy.add('l')
+                stisknute_klavesy.discard('r')
+
+        if 'l' in stisknute_klavesy:
+
+                rx = t * LASER_ACCELERATION * math.cos(math.radians(90-Player_laser.sprite.rotation))
+                ry = t * LASER_ACCELERATION * math.sin(math.radians(90-Player_laser.sprite.rotation))
+
+                if Player_laser.sprite.x > WIDTH or Player_laser.sprite.x < 0 or Player_laser.sprite.y > HEIGHT or Player_laser.sprite.y < 0:
+
+                    Player_laser.sprite.x = mimox
+                    Player_laser.sprite.y = mimoy
+                    stisknute_klavesy.discard('l')
+
+                else:
+
+                    Player_laser.sprite.x = Player_laser.sprite.x + rx
+                    Player_laser.sprite.y = Player_laser.sprite.y + ry
+
+
+
+
+
+
+
+class Wazer:
+
+    def __init__(self):
+
+        Las = pyglet.image.load('laserBlue15.png')
+        Las.anchor_x = Las.width // 2
+        Las.anchor_y = Las.height // 2
+        self.sprite = pyglet.sprite.Sprite(Las, batch=batch)
+        self.sprite.x = mimox
+        self.sprite.y = mimoy
+
+
+Player_ship = Spaceship()
+Player_laser = Wazer()
+
+Player_ship.sprite.x = WIDTH//2
+Player_ship.sprite.y = HEIGHT//2
+
+def cas(t):
+    Player_ship.pohyb_lodi(t)
+
+
 
 def stisk_klavesy(symbol,m):
 
@@ -61,8 +120,8 @@ def stisk_klavesy(symbol,m):
         stisknute_klavesy.add('a')
     if symbol == key.D:
         stisknute_klavesy.add('d')
-    if symbol == key.G:
-        stisknute_klavesy.add('g')
+    if symbol == key.R:
+        stisknute_klavesy.add('r')
 
 
 def pusteni_klavesy(symbol,m):
@@ -78,7 +137,7 @@ def pusteni_klavesy(symbol,m):
 
 def vykresli():
     window.clear()
-    spaceship.draw()
+    batch.draw()
 
 
 window.push_handlers(
@@ -86,6 +145,9 @@ window.push_handlers(
     on_key_press=stisk_klavesy,
     on_key_release=pusteni_klavesy,
 )
-pyglet.clock.schedule(pohyb_lod)
+pyglet.clock.schedule_interval(cas,1/30)
+
+pyglet.app.run()
+
 
 pyglet.app.run()
