@@ -10,8 +10,11 @@ HEIGHT = 600
 
 mimox = -9000
 mimoy = -9000
+mimolx = -10000
+mimoly = -10000
 
 window = pyglet.window.Window(WIDTH, HEIGHT)
+
 
 ACCELERATION = 150
 LASER_ACCELERATION = 2000
@@ -53,23 +56,43 @@ Mett2.anchor_y = Mett2.height // 2
 
 stisknute_klavesy = set()
 meteory = set()
+meteory_2 = set()
+meteory_3 = set()
+meteory_4 = set()
+zivoty = set()
+pozice = [20, HEIGHT-20]
 
 class Meteor:
 
     def __init__(self,met):
 
         self.sprite = pyglet.sprite.Sprite(met, batch=batch)
+        self.sprite.x = mimox
+        self.sprite.y = mimoy
+
 
     def pohyb_meteoru(self,t):
 
-        if 'metb1' not in meteory:
+        if len(meteory_2)==6:
 
-            self.sprite.x = 20
-            self.sprite.y = HEIGHT - 20
-            self.sprite.rotation = random.uniform(-20, -60)
-            meteory.add('metb1')
+            self.sprite.x = mimox
+            self.sprite.y = mimoy
 
-        if 'metb1' in meteory:
+        if len(meteory_4)==6:
+
+            meteory.discard(self)
+            meteory_3.discard(self)
+            meteory_2.clear()
+            meteory_4.clear()
+
+        if self not in meteory and self not in meteory_3:
+
+            self.sprite.x = random.uniform(20, WIDTH-20)
+            self.sprite.y = random.choice(pozice)
+            self.sprite.rotation = random.uniform(0, 360)
+            meteory.add(self)
+
+        if self in meteory and self not in meteory_3:
             if self.sprite.x > WIDTH:
                 self.sprite.x = 0
             elif self.sprite.y < 0 :
@@ -83,27 +106,35 @@ class Meteor:
                 self.sprite.y = self.sprite.y + t * METEORM_ACCELERATION * math.sin(math.radians(self.sprite.rotation))
         if abs(Player_laser.sprite.x - self.sprite.x) < 50 and abs(Player_laser.sprite.y - self.sprite.y) < 50:
 
-            Player_laser.sprite.x = mimox
-            Player_laser.sprite.y = mimoy
-            meteory.add('metr')
+            Player_laser.sprite.x = mimolx
+            Player_laser.sprite.y = mimoly
+            meteory_3.add(self)
 
+        if abs(Player_ship.sprite.x - self.sprite.x) < 60 and abs(Player_ship.sprite.y - self.sprite.y) < 60:
 
-    def zbytek_meteoru(self,t):
+            Player_ship.sprite.x = WIDTH//2
+            Player_ship.sprite.y = HEIGHT//2
+            zivoty.add(self)
 
-        if 'metr' in meteory and 'metre' not in meteory:
+            if len(zivoty) > 2:
+                Player_ship.sprite.x = mimolx
+                Player_ship.sprite.y = mimoly
 
-            if metm1.sprite.x != mimox and metm2.sprite.x != mimox and mets1.sprite.x != mimox and mets2.sprite.x != mimox and mett1.sprite.x != mimox and mett2.sprite.x != mimox:
-                meteory.add('metre')
-                metb1.sprite.x = mimox
-                metb1.sprite.y = mimoy
-            else:
-                self.sprite.x = metb1.sprite.x
-                self.sprite.y = metb1.sprite.y
+            self.sprite.x = mimox
+            self.sprite.y = mimoy
 
-                self.sprite.rotation = random.uniform(0, 360)
+            meteory_3.add(self)
 
+    def zbytek_meteoru(self,t,met):
 
-        if 'metre' in meteory:
+        if met in meteory_3 and self not in meteory_2:
+
+            self.sprite.x = met.sprite.x
+            self.sprite.y = met.sprite.y
+            self.sprite.rotation = random.uniform(0, 360)
+            meteory_2.add(self)
+
+        if self in meteory_2 and self not in meteory_4:
             if self.sprite.x > WIDTH:
                 self.sprite.x = 0
             elif self.sprite.y < 0 :
@@ -118,11 +149,28 @@ class Meteor:
 
         if abs(Player_laser.sprite.x - self.sprite.x) < 30 and abs(Player_laser.sprite.y - self.sprite.y) < 30:
 
-            Player_laser.sprite.x = mimox
-            Player_laser.sprite.y = mimoy
+            Player_laser.sprite.x = mimolx
+            Player_laser.sprite.y = mimoly
 
             self.sprite.x = mimox
             self.sprite.y = mimoy
+
+            meteory_4.add(self)
+
+        if abs(Player_ship.sprite.x - self.sprite.x) < 30 and abs(Player_ship.sprite.y - self.sprite.y) < 30:
+
+            Player_ship.sprite.x = WIDTH//2
+            Player_ship.sprite.y = HEIGHT//2
+            zivoty.add(self)
+
+            if len(zivoty) > 2:
+                Player_ship.sprite.x = mimolx
+                Player_ship.sprite.y = mimoly
+
+            self.sprite.x = mimox
+            self.sprite.y = mimoy
+
+            meteory_4.add(self)
 
 class Spaceship:
 
@@ -132,7 +180,12 @@ class Spaceship:
         Ship.anchor_x = Ship.width // 2
         Ship.anchor_y = Ship.height // 2
         self.sprite = pyglet.sprite.Sprite(Ship, batch=batch)
+        self.sprite.x = WIDTH//2
+        self.sprite.y = HEIGHT//2
+        self.lives = zivoty
 
+    def zivoty(self):
+        self.lives = zivoty
     def pohyb_lodi(self,t):
 
         la = 1
@@ -188,48 +241,33 @@ class Wazer:
         Las.anchor_x = Las.width // 2
         Las.anchor_y = Las.height // 2
         self.sprite = pyglet.sprite.Sprite(Las, batch=batch)
-        self.sprite.x = mimox
-        self.sprite.y = mimoy
+        self.sprite.x = mimolx
+        self.sprite.y = mimoly
 
 
 Player_ship = Spaceship()
-
-Player_ship.sprite.x = WIDTH//2
-Player_ship.sprite.y = HEIGHT//2
-
 Player_laser = Wazer()
 
 metb1 = Meteor(Metb1)
 metb1.sprite.x = mimox
 metb1.sprite.y = mimoy
 metm1 = Meteor(Metm1)
-metm1.sprite.x = mimox
-metm1.sprite.y = mimoy
+
 metm2 = Meteor(Metm2)
-metm2.sprite.x = mimox
-metm2.sprite.y = mimoy
 mets1 = Meteor(Mets1)
-mets1.sprite.x = mimox
-mets1.sprite.y = mimoy
 mets2 = Meteor(Mets2)
-mets2.sprite.x = mimox
-mets2.sprite.y = mimoy
 mett1 = Meteor(Mett1)
-mett1.sprite.x = mimox
-mett1.sprite.y = mimoy
 mett2 = Meteor(Mett2)
-mett2.sprite.x = mimox
-mett2.sprite.y = mimoy
 
 def cas(t):
     Player_ship.pohyb_lodi(t)
     metb1.pohyb_meteoru(t)
-    metm1.zbytek_meteoru(t)
-    metm2.zbytek_meteoru(t)
-    mets1.zbytek_meteoru(t)
-    mets2.zbytek_meteoru(t)
-    mett1.zbytek_meteoru(t)
-    mett2.zbytek_meteoru(t)
+    metm1.zbytek_meteoru(t, metb1)
+    metm2.zbytek_meteoru(t, metb1)
+    mets1.zbytek_meteoru(t, metb1)
+    mets2.zbytek_meteoru(t, metb1)
+    mett1.zbytek_meteoru(t, metb1)
+    mett2.zbytek_meteoru(t, metb1)
 
 def stisk_klavesy(symbol,m):
 
@@ -269,4 +307,3 @@ window.push_handlers(
 pyglet.clock.schedule_interval(cas,1/30)
 
 pyglet.app.run()
-
