@@ -1,9 +1,14 @@
 import math
 import random
+import logging
+import pprint
 
 import pyglet
 from pyglet import gl
 from pyglet.window import key
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.ERROR)
 
 #načtu knihovny
 
@@ -94,19 +99,25 @@ class Meteor(Object):
 
         #konstanty pro zásah nebo kolizi
 
+        init_metheor_spawn = self.sprite.acc == METEORB_ACCELERATION and self not in skup and self not in cilskup
+        meteor_hit = self.sprite.acc != METEORB_ACCELERATION and self not in skup and self not in cilskup and len(predskup) != 0
+        rocket_hit = Ship2metx < 60 and Ship2mety < 60
+        laser_hit = Las2metx < 50 and Las2mety < 50
 
-
-        if self.sprite.acc == METEORB_ACCELERATION and self not in skup and self not in cilskup:
-
+        if init_metheor_spawn:
+            log.error('spawn main: ------------------ ')
             self.sprite.x = random.uniform(20, WIDTH-20)
             self.sprite.y = random.choice(pozice)
             self.sprite.rotation = random.uniform(0, 360)
             skup.append(self)
+            log.error('puvodni: %s', len(skup))
+            log.error('ponicene: %s', len(predskup))
+            log.error('znicene: %s', len(cilskup))
 
             #spawn velkého meteoru
 
-        if self.sprite.acc != METEORB_ACCELERATION and self not in skup and self not in cilskup and len(predskup) != 0:
-
+        if meteor_hit:
+            log.error('meteor hit: ------------------ ')
             met = predskup.pop()
             self.sprite.x = met.sprite.x
             self.sprite.y = met.sprite.y
@@ -115,6 +126,9 @@ class Meteor(Object):
                 met.sprite.y = MIMOY
             self.sprite.rotation = random.uniform(0, 360)
             skup.append(self)
+            log.error('puvodni: %s', len(skup))
+            log.error('ponicene: %s', len(predskup))
+            log.error('znicene: %s', len(cilskup))
 
             #spawn zbylých meteorů
 
