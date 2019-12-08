@@ -7,13 +7,13 @@ from pyglet.window import key
 
 #načtu knihovny
 
-WIDTH = 1300
+WIDTH = 400
 HEIGHT = 600
 
-mimox = -9000
-mimoy = -9000
-mimolx = -10000
-mimoly = -10000
+MIMOX = -9000
+MIMOY = -9000
+MIMOLX = -10000
+MIMOLY = -10000
 
 #definuju pole
 
@@ -111,14 +111,14 @@ class Meteor(Object):
             self.sprite.x = met.sprite.x
             self.sprite.y = met.sprite.y
             if len(predskup) == 0:
-                met.sprite.x = mimox
-                met.sprite.y = mimoy
+                met.sprite.x = MIMOX
+                met.sprite.y = MIMOY
             self.sprite.rotation = random.uniform(0, 360)
             skup.append(self)
 
             #spawn zbylých meteorů
 
-        if self.sprite.x != mimox:
+        if self.sprite.x != MIMOX:
             if self.sprite.x > WIDTH:
                 self.sprite.x = 0
             elif self.sprite.y < 0 :
@@ -133,39 +133,47 @@ class Meteor(Object):
 
                 #pohyb meteorů
 
-        if Las2metx < 50 and Las2mety < 50:
-
-            laser.sprite.x = mimolx
-            laser.sprite.y = mimoly
+        if laser_hit:
+            log.error('laser shoot: ------------------ ')
+            laser.sprite.x = MIMOLX
+            laser.sprite.y = MIMOLY
+            laser.sprite.x = MIMOLX
             cilskup.append(self)
             cilskup.append(self)
             if self.sprite.acc == METEORT_ACCELERATION:
-                self.sprite.x = mimox
-                self.sprite.y = mimoy
+                self.sprite.x = MIMOX
+                self.sprite.y = MIMOY
+            log.error('puvodni: %s', len(skup))
+            log.error('ponicene: %s', len(predskup))
+            log.error('znicene: %s', len(cilskup))
 
             #zásah laserem
 
-        if Ship2metx < 60 and Ship2mety < 60:
+        if rocket_hit:
 
+            log.error('rocket hit: ------------------ ')
             player.sprite.x = WIDTH//2
             player.sprite.y = HEIGHT//2
             cilskup.append(self)
             cilskup.append(self)
             if self.sprite.acc == METEORT_ACCELERATION:
-                self.sprite.x = mimox
-                self.sprite.y = mimoy
+                self.sprite.x = MIMOX
+                self.sprite.y = MIMOY
             player.sprite.ziv -= 1
             if player.sprite.ziv == 1:
-                player.sprite.x = mimolx
-                player.sprite.y = mimoly
+                player.sprite.x = MIMOLX
+                player.sprite.y = MIMOLY
 
                 #kolize s hracem
+            log.error('puvodni: %s', len(skup))
+            log.error('ponicene: %s', len(predskup))
+            log.error('znicene: %s', len(cilskup))
 
 class Spaceship(Object):
 
     def pohyb_lodi(self, t, laser):
 
-        if self.sprite.x != mimox:
+        if self.sprite.x != MIMOX:
             if self.sprite.x > WIDTH:
                 self.sprite.x = 0
             elif self.sprite.y < 0 :
@@ -210,8 +218,8 @@ class Spaceship(Object):
 
             if laser.sprite.x > WIDTH or laser.sprite.x < 0 or laser.sprite.y > HEIGHT or laser.sprite.y < 0:
 
-                laser.sprite.x = mimox
-                laser.sprite.y = mimoy
+                laser.sprite.x = MIMOLX
+                laser.sprite.y = MIMOLY
                 stisknute_klavesy.discard('l')
 
             else:
@@ -229,8 +237,8 @@ class Wazer:
         Las.anchor_x = Las.width // 2
         Las.anchor_y = Las.height // 2
         self.sprite = pyglet.sprite.Sprite(Las, batch=batch)
-        self.sprite.x = mimolx
-        self.sprite.y = mimoly
+        self.sprite.x = MIMOLX
+        self.sprite.y = MIMOLY
 
 player_ship = Spaceship('playerShip1_red.png', ACCELERATION, ROTATION_SPEED, 5)
 player_ship.sprite.x = WIDTH//2
