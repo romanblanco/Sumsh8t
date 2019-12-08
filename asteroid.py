@@ -17,10 +17,6 @@ mimoly = -10000
 
 #definuju pole
 
-Met = 0
-
-#bezvýznamný met, ukládám do něj věci každý cyklus
-
 window = pyglet.window.Window(WIDTH, HEIGHT)
 
 POCET_METEORU = 1
@@ -71,25 +67,25 @@ pozice = [20, HEIGHT-20]
 
 class Object:
 
-    def __init__(self, vec, imgpng, acc, rot, ziv):
+    def __init__(self, imgpng, acc, rot, ziv):
 
         vec = pyglet.image.load(imgpng)
         vec.anchor_x = vec.width // 2
         vec.anchor_y = vec.height // 2
 
         self.sprite = pyglet.sprite.Sprite(vec, batch=batch)
-        self.sprite.x = mimox
-        self.sprite.y = mimoy
+        self.sprite.x = MIMOX
+        self.sprite.y = MIMOY
         self.sprite.acc = acc
         self.sprite.rot = rot
         self.sprite.ziv = ziv
 
-        #nadefinuju všechny objekty, protože nevím jak je vykreslit postupně tak je všechny vytvořím hned a jen vykreslím tam, kde nejdou vidět, pozice mimox,y,
+        #nadefinuju všechny objekty, protože nevím jak je vykreslit postupně tak je všechny vytvořím hned a jen vykreslím tam, kde nejdou vidět, pozice MIMOX,y,
 
 
 class Meteor(Object):
 
-    def pohyb_meteoru(self, t, player, laser, skup, predskup, cilskup, met):
+    def pohyb_meteoru(self, t, player, laser, skup, predskup, cilskup):
 
         Las2metx = abs(laser.sprite.x - self.sprite.x)
         Las2mety = abs(laser.sprite.y - self.sprite.y)
@@ -236,54 +232,50 @@ class Wazer:
         self.sprite.x = mimolx
         self.sprite.y = mimoly
 
-player_ship = Spaceship(Met, 'playerShip1_red.png', ACCELERATION, ROTATION_SPEED, 5)
+player_ship = Spaceship('playerShip1_red.png', ACCELERATION, ROTATION_SPEED, 5)
 player_ship.sprite.x = WIDTH//2
 player_ship.sprite.y = HEIGHT//2
 
 player_laser = Wazer()
 
-metb1 = Meteor(Met, random.choice(meteory_big), METEORB_ACCELERATION, ROTATION_SPEED, 1)
-
-metm1 = Meteor(Met, random.choice(meteory_med), METEORM_ACCELERATION, ROTATION_SPEED, 1)
-metm2 = Meteor(Met, random.choice(meteory_med), METEORM_ACCELERATION, ROTATION_SPEED, 1)
-
-mets1 = Meteor(Met, random.choice(meteory_small), METEORS_ACCELERATION, ROTATION_SPEED, 1)
-mets2 = Meteor(Met, random.choice(meteory_small), METEORS_ACCELERATION, ROTATION_SPEED, 1)
-mets3 = Meteor(Met, random.choice(meteory_small), METEORS_ACCELERATION, ROTATION_SPEED, 1)
-mets4 = Meteor(Met, random.choice(meteory_small), METEORS_ACCELERATION, ROTATION_SPEED, 1)
-
-mett1 = Meteor(Met, random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1)
-mett2 = Meteor(Met, random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1)
-mett3 = Meteor(Met, random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1)
-mett4 = Meteor(Met, random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1)
-mett5 = Meteor(Met, random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1)
-mett6 = Meteor(Met, random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1)
-mett7 = Meteor(Met, random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1)
-mett8 = Meteor(Met, random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1)
+meteors = {
+  'big': [
+      Meteor(random.choice(meteory_big), METEORB_ACCELERATION, ROTATION_SPEED, 1),
+  ],
+  'medium': [
+      Meteor(random.choice(meteory_med), METEORM_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_med), METEORM_ACCELERATION, ROTATION_SPEED, 1),
+  ],
+  'small': [
+      Meteor(random.choice(meteory_small), METEORS_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_small), METEORS_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_small), METEORS_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_small), METEORS_ACCELERATION, ROTATION_SPEED, 1),
+  ],
+  'tiny': [
+      Meteor(random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1),
+      Meteor(random.choice(meteory_tiny), METEORT_ACCELERATION, ROTATION_SPEED, 1),
+  ],
+}
 
 #vytvorím laser, meteory a lod
 
 def cas(t):
     player_ship.pohyb_lodi(t, player_laser)
-
-    metb1.pohyb_meteoru(t, player_ship, player_laser, meteory_b3, meteory_t2, meteory_b2, Met)
-
-    metm1.pohyb_meteoru(t, player_ship, player_laser, meteory_m3, meteory_b2, meteory_m2, Met)
-    metm2.pohyb_meteoru(t, player_ship, player_laser, meteory_m3, meteory_b2, meteory_m2, Met)
-
-    mets1.pohyb_meteoru(t, player_ship, player_laser, meteory_s3, meteory_m2, meteory_s2, Met)
-    mets2.pohyb_meteoru(t, player_ship, player_laser, meteory_s3, meteory_m2, meteory_s2, Met)
-    mets3.pohyb_meteoru(t, player_ship, player_laser, meteory_s3, meteory_m2, meteory_s2, Met)
-    mets4.pohyb_meteoru(t, player_ship, player_laser, meteory_s3, meteory_m2, meteory_s2, Met)
-
-    mett1.pohyb_meteoru(t, player_ship, player_laser, meteory_t3, meteory_s2, meteory_t2, Met)
-    mett2.pohyb_meteoru(t, player_ship, player_laser, meteory_t3, meteory_s2, meteory_t2, Met)
-    mett3.pohyb_meteoru(t, player_ship, player_laser, meteory_t3, meteory_s2, meteory_t2, Met)
-    mett4.pohyb_meteoru(t, player_ship, player_laser, meteory_t3, meteory_s2, meteory_t2, Met)
-    mett5.pohyb_meteoru(t, player_ship, player_laser, meteory_t3, meteory_s2, meteory_t2, Met)
-    mett6.pohyb_meteoru(t, player_ship, player_laser, meteory_t3, meteory_s2, meteory_t2, Met)
-    mett7.pohyb_meteoru(t, player_ship, player_laser, meteory_t3, meteory_s2, meteory_t2, Met)
-    mett8.pohyb_meteoru(t, player_ship, player_laser, meteory_t3, meteory_s2, meteory_t2, Met)
+    for big_meteor in meteors['big']:
+        big_meteor.pohyb_meteoru(t, player_ship, player_laser, meteory_b3, meteory_t2, meteory_b2)
+    for medium_meteor in meteors['medium']:
+        medium_meteor.pohyb_meteoru(t, player_ship, player_laser, meteory_m3, meteory_b2, meteory_m2)
+    for small_meteor in meteors['small']:
+        small_meteor.pohyb_meteoru(t, player_ship, player_laser, meteory_s3, meteory_m2, meteory_s2)
+    for small_meteor in meteors['tiny']:
+        small_meteor.pohyb_meteoru(t, player_ship, player_laser, meteory_t3, meteory_s2, meteory_t2)
 
 def stisk_klavesy(symbol,m):
 
