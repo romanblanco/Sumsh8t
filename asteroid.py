@@ -110,19 +110,19 @@ class Meteor(Object):
         laser_hit = Las2metx < 50 and Las2mety < 50
 
         if init_metheor_spawn:
-            log.error('spawn main: ------------------ ')
+            log.debug('spawn main: ------------------ ')
             self.sprite.x = random.uniform(20, WIDTH-20)
             self.sprite.y = random.choice(pozice)
             self.sprite.rotn = random.uniform(0, 360)
             skup.append(self)
-            log.error('puvodni: %s', len(skup))
-            log.error('ponicene: %s', len(predskup))
-            log.error('znicene: %s', len(cilskup))
+            log.debug('puvodni: %s', len(skup))
+            log.debug('ponicene: %s', len(predskup))
+            log.debug('znicene: %s', len(cilskup))
 
             #spawn velkého meteoru
 
         if meteor_hit:
-            log.error('meteor hit: ------------------ ')
+            log.debug('meteor hit: ------------------ ')
             met = predskup.pop()
             self.sprite.x = met.sprite.x
             self.sprite.y = met.sprite.y
@@ -131,9 +131,9 @@ class Meteor(Object):
                 met.sprite.y = MIMOY
             self.sprite.rotn = random.uniform(0, 360)
             skup.append(self)
-            log.error('puvodni: %s', len(skup))
-            log.error('ponicene: %s', len(predskup))
-            log.error('znicene: %s', len(cilskup))
+            log.debug('puvodni: %s', len(skup))
+            log.debug('ponicene: %s', len(predskup))
+            log.debug('znicene: %s', len(cilskup))
 
             #spawn zbylých meteorů
 
@@ -154,7 +154,7 @@ class Meteor(Object):
                 #pohyb meteorů
 
         if laser_hit:
-            log.error('laser shoot: ------------------ ')
+            log.debug('laser shoot: ------------------ ')
             laser.sprite.x = MIMOLX
             laser.sprite.y = MIMOLY
             cilskup.append(self)
@@ -168,15 +168,15 @@ class Meteor(Object):
                     meteory_b3.clear()
                     meteory_m3.clear()
                     meteory_s3.clear()
-            log.error('puvodni: %s', len(skup))
-            log.error('ponicene: %s', len(predskup))
-            log.error('znicene: %s', len(cilskup))
+            log.debug('puvodni: %s', len(skup))
+            log.debug('ponicene: %s', len(predskup))
+            log.debug('znicene: %s', len(cilskup))
 
             #zásah laserem
 
         if rocket_hit:
 
-            log.error('rocket hit: ------------------ ')
+            log.debug('rocket hit: ------------------ ')
             player.sprite.x = WIDTH//2
             player.sprite.y = HEIGHT//2
             cilskup.append(self)
@@ -190,9 +190,9 @@ class Meteor(Object):
                 player.sprite.y = MIMOLY
 
                 #kolize s hracem
-            log.error('puvodni: %s', len(skup))
-            log.error('ponicene: %s', len(predskup))
-            log.error('znicene: %s', len(cilskup))
+            log.debug('puvodni: %s', len(skup))
+            log.debug('ponicene: %s', len(predskup))
+            log.debug('znicene: %s', len(cilskup))
 
 class Spaceship(Object):
 
