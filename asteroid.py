@@ -26,6 +26,10 @@ window = pyglet.window.Window(WIDTH, HEIGHT)
 
 POCET_METEORU = 1
 
+MAX_SPACESHIP_SPEED = 400
+MAX_SPACESHIP_BACKWARDS_SPEED = -250
+
+
 ACCELERATION = 150
 LASER_ACCELERATION = 1000
 EFFECT_ACCELERATION = 100
@@ -206,7 +210,8 @@ class Spaceship(Object):
 
         if 'w' in stisknute_klavesy:
 
-            if self.sprite.acc < 250:
+            log.debug('acc: %s', self.sprite.acc)
+            if self.sprite.acc < MAX_SPACESHIP_SPEED:
                 self.sprite.acc += 10
             self.sprite.x = self.sprite.x + t * self.sprite.acc * math.cos(math.radians(90-self.sprite.rotation))
             self.sprite.y = self.sprite.y + t * self.sprite.acc * math.sin(math.radians(90-self.sprite.rotation))
@@ -214,9 +219,15 @@ class Spaceship(Object):
 
         if 'w' not in stisknute_klavesy and 's' not in stisknute_klavesy:
 
-            if self.sprite.acc != 0:
+            log.debug('acc: %s', self.sprite.acc)
+            if self.sprite.acc < 0:
+                self.sprite.acc += 10
+            if self.sprite.acc > 0:
                 self.sprite.acc -= 10
             if self.sprite.v == 'w':
+                self.sprite.x = self.sprite.x + t * self.sprite.acc * math.cos(math.radians(90-self.sprite.rotation))
+                self.sprite.y = self.sprite.y + t * self.sprite.acc * math.sin(math.radians(90-self.sprite.rotation))
+            elif self.sprite.v == 's':
                 self.sprite.x = self.sprite.x + t * self.sprite.acc * math.cos(math.radians(90-self.sprite.rotation))
                 self.sprite.y = self.sprite.y + t * self.sprite.acc * math.sin(math.radians(90-self.sprite.rotation))
             else:
@@ -225,10 +236,12 @@ class Spaceship(Object):
 
         if 's' in stisknute_klavesy:
 
-            if self.sprite.acc < 250:
-                self.sprite.acc += 10
-            self.sprite.x = self.sprite.x - t * self.sprite.acc * math.cos(math.radians(90-self.sprite.rotation))
-            self.sprite.y = self.sprite.y - t * self.sprite.acc * math.sin(math.radians(90-self.sprite.rotation))
+
+            log.debug('acc: %s', self.sprite.acc)
+            if MAX_SPACESHIP_BACKWARDS_SPEED < self.sprite.acc < MAX_SPACESHIP_SPEED:
+                self.sprite.acc -= 10
+            self.sprite.x = self.sprite.x + t * self.sprite.acc * math.cos(math.radians(90-self.sprite.rotation))
+            self.sprite.y = self.sprite.y + t * self.sprite.acc * math.sin(math.radians(90-self.sprite.rotation))
             self.sprite.v = 's'
 
         if 'd' in stisknute_klavesy:
